@@ -2401,7 +2401,7 @@ function startGame(){
   } else {
     S.roundTimeRemaining = S.roundTimeLimit;
     S.mapTimeRemaining = S.mapTimeLimit;
-    S.player.money = 800;
+    S.player.money = 16000;
   }
 
   resetBotNameCounters();
