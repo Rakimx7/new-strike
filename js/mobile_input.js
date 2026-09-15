@@ -676,6 +676,17 @@ export function initTapToPlay(){
   const ttp = document.getElementById('tapToPlay');
   if(!ttp) return;
 
+  // ⭐ More robust mobile detection
+  const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  const isSmallScreen = Math.min(window.innerWidth, window.innerHeight) < 900;
+  const hasMobileUA = /Android|iPhone|iPad|iPod|Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isMobile = isTouch || isSmallScreen || hasMobileUA;
+
+  if(!isMobile) return;
+
+  // ⭐ Force is-mobile class
+  document.body.classList.add('is-mobile');
+
   // Show only on mobile
   if(!document.body.classList.contains('is-mobile')) return;
 
@@ -710,7 +721,7 @@ export function initTapToPlay(){
 export async function goFullscreen(){
   const el = document.documentElement;
 
-  // Request fullscreen (must be in user gesture)
+  // ⭐ Request fullscreen with multiple fallbacks
   try {
     if(el.requestFullscreen) {
       await el.requestFullscreen({ navigationUI: 'hide' });
@@ -718,21 +729,28 @@ export async function goFullscreen(){
       await el.webkitRequestFullscreen();
     } else if(el.mozRequestFullScreen) {
       await el.mozRequestFullScreen();
+    } else if(el.msRequestFullscreen) {
+      await el.msRequestFullscreen();
     }
   } catch(e){
     console.warn('[Fullscreen] request failed:', e);
   }
 
-  // Try to lock to landscape (only works after fullscreen)
-  try {
-    if(screen.orientation && screen.orientation.lock){
-      await screen.orientation.lock('landscape');
+  // ⭐ Try orientation lock with delay (some browsers need wait)
+  setTimeout(async () => {
+    try {
+      if(screen.orientation && screen.orientation.lock){
+        await screen.orientation.lock('landscape');
+        console.log('[Orientation] Locked to landscape');
+      } else {
+        console.log('[Orientation] Lock API not supported');
+      }
+    } catch(e){
+      console.warn('[Orientation] Lock failed:', e);
     }
-  } catch(e){
-    console.warn('[Orientation] lock failed:', e);
-  }
+  }, 250);
 
-  // iOS fallback: scroll to hide address bar (iOS Safari)
+  // iOS fallback: scroll to hide address bar
   setTimeout(() => {
     window.scrollTo(0, 1);
   }, 150);

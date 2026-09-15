@@ -1,0 +1,25 @@
+{
+  "name": "NEW STRIKE",
+  "short_name": "NEW STRIKE",
+  "description": "FPS Web Game — Mercenaries vs Cartel",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#080503",
+  "theme_color": "#f0a500",
+  "icons": [
+    {
+      "src": "./assets/images/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/images/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
