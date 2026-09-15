@@ -1940,3 +1940,37 @@ body:not(.is-mobile) #mobileControls { display: none !important; }
   letter-spacing: 3px;
   color: #8c8171;
 }
+
+
+/* ⭐ Hide dev login kapag may panel na nakabukas */
+body.shopOpen        #devLoginBtn,
+body.consoleOpen     #devLoginBtn,
+body.bagOpen         #devLoginBtn,
+body.commandMenuOpen #devLoginBtn {
+  display: none !important;
+}
+
+/* ⭐ Full mobile-friendly shop close button */
+@media (max-width: 900px), (max-height: 500px) {
+  #shopClose {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 100;
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+    letter-spacing: 2px !important;
+    border: 2px solid #f0a500 !important;
+    background: rgba(10,6,2,.95) !important;
+    color: #ffd75e !important;
+  }
+  #shopClose:active {
+    background: #f0a500 !important;
+    color: #0a0202 !important;
+  }
+
+  /* Shop header — dagdagan ng padding sa right para hindi matakpan ng close */
+  #shopHeader {
+    padding-right: 90px !important;
+  }
+}

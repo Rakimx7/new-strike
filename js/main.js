@@ -1,4 +1,4 @@
-import { initMobileControls, initLayoutEditor, goFullscreen, exitFullscreen, isFullscreen } from './mobile_input.js';
+import { initMobileControls, initLayoutEditor, goFullscreen, exitFullscreen, isFullscreen, updateAutoAim, setAutoAimEnabled, isAutoAimEnabled } from './mobile_input.js';
 if(!S.mobile) S.mobile = { fireHeld: false, adsHeld: false };
 import * as THREE from 'three';
 import {
@@ -52,12 +52,6 @@ import {
 } from './modes/search_and_destroy.js';
 
 window._startSDRound = startSDRound;
-// Mobile-friendly hooks
-window._shoot              = () => shoot();
-window._startReload        = () => startReload();
-window._switchWeapon       = (id) => switchWeapon(id);
-window._handleInteractKey  = () => handleInteractKey();
-window._openShop           = () => openShop();
 
 // =========================================================
 // FFA CONFIG
@@ -1671,6 +1665,14 @@ const SHOP_CATS = ['pistol','smg','rifle','lmg','shotgun','sniper','launcher','f
 const CAT_LABELS = { pistol:'PISTOLS', smg:'SMGs', rifle:'RIFLES', lmg:'MG', shotgun:'SHOTGUNS', sniper:'SNIPERS', launcher:'LAUNCHERS', flamethrower:'FLAME', cannon:'CANNON', melee:'MELEE', armor:'ARMOR', equipment:'EQUIP', ammo:'AMMO' };
 let shopCat = 'pistol';
 
+
+// ⭐ Body class helpers (para sa CSS hiding)
+function setBodyClass(name, on){
+  if(on) document.body.classList.add(name);
+  else   document.body.classList.remove(name);
+}
+
+
 function openShop(){
   if(!S.player || !S.player.alive || S.player.hp <= 0) return;
 
@@ -1700,11 +1702,13 @@ function openShop(){
   S.shopOpen = true;
   const el = document.getElementById('shop'); if(el) el.style.display = 'flex';
   document.exitPointerLock();
+  setBodyClass('shopOpen', true);   // ⭐ hide dev login
   renderShop();
 }
 function closeShop(){
   S.shopOpen = false;
   const el = document.getElementById('shop'); if(el) el.style.display = 'none';
+  setBodyClass('shopOpen', false);   // ⭐ FIX — restore dev login
   if(S.gameState === 'playing') renderer.domElement.requestPointerLock();
 }
 function renderShop(){
@@ -2329,6 +2333,20 @@ function initMobileSettings(){
       applyMobileSettings();
     });
   }
+
+  // Auto-aim toggle
+  const aaSelect = document.getElementById('mobileAutoAimSelect');
+  if(aaSelect){
+    try { aaSelect.value = localStorage.getItem('newstrike_autoaim') === '0' ? 'off' : 'on'; } catch(e){}
+    aaSelect.addEventListener('change', () => {
+      const on = aaSelect.value === 'on';
+      if(window._setAutoAim) window._setAutoAim(on);
+      showMsg('AUTO-AIM: ' + (on ? 'ON' : 'OFF'), 1200);
+    });
+  }
+
+
+
 
   // Apply initial
   applyMobileSettings();
@@ -3396,6 +3414,7 @@ function animate(){
     updateProjectiles(dt);
     updatePlacements(dt);
     updateDecals(dt);
+    if(window._updateAutoAim) window._updateAutoAim();
     updateADS(dt);
     updateHUD();
 
@@ -3539,6 +3558,9 @@ updateHUD();
 updateDevUI();
 initMenuFlow();
 initMobileSettings();
+window._updateAutoAim = updateAutoAim;
+window._setAutoAim = setAutoAimEnabled;
+window._isAutoAim = isAutoAimEnabled;
 // ⭐ Continuously check orientation
 setInterval(() => {
   if(!document.body.classList.contains('is-mobile')) return;
