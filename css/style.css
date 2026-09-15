@@ -1844,3 +1844,99 @@ body:not(.is-mobile) #mobileControls { display: none !important; }
     border-radius: 3px;
   }
 }
+
+
+/* =========================================================
+   MOBILE: TAP TO PLAY + ROTATE WARNING
+   ========================================================= */
+#tapToPlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,.95) 100%),
+    radial-gradient(circle at 50% 30%, rgba(240,165,0,.15) 0%, transparent 60%);
+  cursor: pointer;
+  text-align: center;
+  padding: 20px;
+  animation: ttpFadeIn .3s ease;
+}
+@keyframes ttpFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+#tapToPlay .ttp-inner { animation: ttpPulse 2s ease-in-out infinite; }
+@keyframes ttpPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.05); }
+}
+#tapToPlay .ttp-icon {
+  font-size: 64px;
+  color: #f0a500;
+  text-shadow: 0 0 40px rgba(240,165,0,.7);
+  margin-bottom: 20px;
+  line-height: 1;
+}
+#tapToPlay .ttp-title {
+  font-family: 'Anton', 'Oswald', sans-serif;
+  font-size: 28px;
+  letter-spacing: 6px;
+  color: #ffd75e;
+  text-shadow: 0 0 20px rgba(240,165,0,.6), 0 2px 0 #000;
+  margin-bottom: 10px;
+}
+#tapToPlay .ttp-sub {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #d6cdb8;
+  margin-bottom: 24px;
+}
+#tapToPlay .ttp-hint {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #8c8171;
+  margin-top: 24px;
+}
+
+/* Portrait warning */
+#rotateWarning {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.95);
+  color: #ffd75e;
+  text-align: center;
+  padding: 20px;
+}
+#rotateWarning .rw-icon {
+  font-size: 72px;
+  margin-bottom: 20px;
+  animation: rwRotate 1.5s ease-in-out infinite;
+  display: inline-block;
+}
+@keyframes rwRotate {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(90deg); }
+}
+#rotateWarning .rw-title {
+  font-family: 'Anton', 'Oswald', sans-serif;
+  font-size: 22px;
+  letter-spacing: 5px;
+  margin-bottom: 12px;
+}
+#rotateWarning .rw-sub {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #8c8171;
+}

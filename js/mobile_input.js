@@ -86,6 +86,7 @@ export function initMobileControls(keysRef){
 
   console.log('[MobileInput] Touch controls active');
   showIOSHint();
+  initTapToPlay();       // ⭐ Show Tap to Play prompt
   return true;
 }
 
@@ -644,6 +645,63 @@ export function initLayoutEditor(){
     });
   }
 }
+
+
+// ═══════════════════════════════════════════════════════════
+// TAP TO PLAY — Fullscreen gate
+// ═══════════════════════════════════════════════════════════
+export function showTapToPlay(){
+  const ttp = document.getElementById('tapToPlay');
+  if(!ttp) return;
+  ttp.style.display = 'flex';
+}
+export function hideTapToPlay(){
+  const ttp = document.getElementById('tapToPlay');
+  if(!ttp) return;
+  ttp.style.display = 'none';
+}
+
+function checkOrientation(){
+  const rw = document.getElementById('rotateWarning');
+  if(!rw) return;
+  const isPortrait = window.innerHeight > window.innerWidth;
+  if(isPortrait){
+    rw.style.display = 'flex';
+  } else {
+    rw.style.display = 'none';
+  }
+}
+
+export function initTapToPlay(){
+  const ttp = document.getElementById('tapToPlay');
+  if(!ttp) return;
+
+  // Show only on mobile
+  if(!document.body.classList.contains('is-mobile')) return;
+
+  // Show the prompt
+  ttp.style.display = 'flex';
+  checkOrientation();
+
+  // Listen for orientation changes
+  window.addEventListener('resize', checkOrientation);
+  window.addEventListener('orientationchange', () => setTimeout(checkOrientation, 200));
+
+  // On tap → fullscreen + hide
+  const handleTap = async () => {
+    ttp.style.display = 'none';
+    try { await goFullscreen(); } catch(e){}
+    // Small delay to allow fullscreen
+    setTimeout(checkOrientation, 300);
+  };
+
+  ttp.addEventListener('click', handleTap);
+  ttp.addEventListener('touchstart', handleTap, { passive: true });
+}
+
+
+
+
 
 
 // ═══════════════════════════════════════════════════════════

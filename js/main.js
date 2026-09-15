@@ -3539,6 +3539,17 @@ updateHUD();
 updateDevUI();
 initMenuFlow();
 initMobileSettings();
+// ⭐ Continuously check orientation
+setInterval(() => {
+  if(!document.body.classList.contains('is-mobile')) return;
+  const rw = document.getElementById('rotateWarning');
+  if(!rw) return;
+  if(rw.style.display === 'flex'){
+    const isPortrait = window.innerHeight > window.innerWidth;
+    if(!isPortrait) rw.style.display = 'none';
+  }
+}, 500);
+
 try { initLayoutEditor(); } catch(e){ console.warn('[LayoutEditor]', e); }
 
 
