@@ -1,0 +1,15 @@
+export const STAND_EYE = 1.7;
+export const CROUCH_EYE = 1.05;
+export const WORLD_HALF = 100;
+export const PLAYER_BOUND = 98.5;
+export const DEFAULT_FOV = 75;
+export const DM_KILL_TARGET = 30;
+export const PENETRATION_THRESHOLD = 1.5;
+export const PENETRATION_DAMAGE_LOSS = 0.4;
+export const MAX_PENETRATIONS = 2;
+export const BOMB_PLANT_TIME = 3.0;
+export const DEFUSE_TIME_DEFAULT = 10.0;
+export const DEFUSE_TIME_KIT = 5.0;
+export const STREAK_WINDOW_MS = 3500;
+export const INTRO_DURATION = 3000;
+export const ADMIN_PASSWORD = 'lowpoly2024';

@@ -1,0 +1,1 @@
+export const MM_ZOOM_LEVELS = [60, 100, 160, 260, 400];

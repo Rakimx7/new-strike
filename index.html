@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEW STRIKE - Mercenaries vs Cartel</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar.min.js"></script>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+</head>
+<body>
+
+<div id="intro">
+  <div class="logo-box">
+    <img id="introLogo" alt="" style="display:none">
+    <div class="placeholder" id="introLogoPlaceholder">[ GAME LOGO ]</div>
+  </div>
+
+  <h1 data-text="NEW STRIKE">NEW STRIKE</h1>
+
+  <div class="tagline">
+    <span class="t-merc">MERCENARIES</span>
+    <span class="t-vs">VS</span>
+    <span class="t-cartel">CARTEL</span>
+  </div>
+
+  <div class="dev-box">
+    <div class="dev-avatar">
+      <img id="introDevImg" alt="" style="display:none">
+      <div class="placeholder" id="introDevPlaceholder">DEV<br>PIC</div>
+    </div>
+    <div class="dev-info">
+      <div class="role">LEAD DEVELOPER</div>
+      <div class="name">LOUIE BRIAN GONZAGA</div>
+    </div>
+  </div>
+
+  <div class="loader"></div>
+  <div class="hint">INITIALIZING SYSTEMS...</div>
+</div>
+
+<div id="menu">
+  <h1>NEW STRIKE</h1>
+  <div class="sub">MERCENARIES vs CARTEL</div>
+  <div class="credit">created by <b>Louie Brian Gonzaga</b></div>
+  <div id="menuTabs">
+    <button class="menuTab active" data-tab="play">▶ PLAY</button>
+    <button class="menuTab" data-tab="settings">⚙ SETTINGS</button>
+    <button class="menuTab" data-tab="modules">🔗 MODULES</button>
+  </div>
+  <div class="menuPage active" id="pagePlay">
+    <div class="menuIntro">
+      <div class="menuIntroBig">READY TO DEPLOY?</div>
+      <div class="menuIntroSub">Choose your mode, map, and faction in the next step.</div>
+    </div>
+    <button id="startFlowBtn" class="menuBigBtn">▶ START NEW MATCH</button>
+    <button id="quitBtn" class="menuQuitBtn">⏻ QUIT GAME</button>
+  </div>
+  <div class="menuPage" id="pageSettings">
+    <div class="label">Bot Difficulty</div>
+    <div style="display:flex;justify-content:center;margin:10px 0;">
+      <select id="diffSelect">
+        <option value="EASY" selected>EASY</option>
+        <option value="NORMAL">NORMAL</option>
+        <option value="HARD">HARD</option>
+        <option value="EXPERT">EXPERT</option>
+        <option value="INSANE">INSANE</option>
+      </select>
+    </div>
+    <div id="diffDesc">Relaxed bots · good for practice</div>
+    <div id="settingsInfo">
+      <b>MATCH TIMERS</b>
+      <div class="row"><label>Map time (s)</label><input type="number" id="mapTimeInput" min="60" max="7200" step="30" value="1800"></div>
+      <div class="row"><label>Round time (s)</label><input type="number" id="roundTimeInput" min="30" max="900" step="5" value="115"></div>
+      <div class="row"><label>Bomb fuse (s)</label><input type="number" id="bombFuseInput" min="10" max="120" step="5" value="40"></div>
+    </div>
+    <div id="mobileSettingsInfo">
+      <b>📱 MOBILE CONTROLS</b>
+      <div class="row"><label>Display</label>
+        <select id="mobileModeSelect">
+          <option value="auto" selected>AUTO</option>
+          <option value="on">ALWAYS ON</option>
+          <option value="off">ALWAYS OFF</option>
+        </select>
+      </div>
+      <div class="row"><label>Size</label>
+        <input type="range" id="mobileSizeRange" min="0.6" max="1.4" step="0.1" value="1.0">
+        <span id="mobileSizeValue" style="min-width:36px;text-align:right;color:#ffd75e;">1.0×</span>
+      </div>
+      <div class="row"><label>Opacity</label>
+        <input type="range" id="mobileOpacityRange" min="0.3" max="1.0" step="0.1" value="1.0">
+        <span id="mobileOpacityValue" style="min-width:36px;text-align:right;color:#ffd75e;">1.0</span>
+      </div>
+
+
+            <div class="row" style="margin-top:12px;">
+        <button id="editLayoutBtn" style="
+          width:100%;
+          padding:10px;
+          background:linear-gradient(180deg,#ffc234,#f0a500);
+          color:#0a0202;
+          border:none;
+          font-family:'Oswald',sans-serif;
+          font-weight:700;
+          font-size:12px;
+          letter-spacing:3px;
+          cursor:pointer;
+        ">✎ EDIT LAYOUT</button>
+      </div>
+
+
+
+      <div style="font-size:9px;color:#8c8171;margin-top:8px;letter-spacing:1.5px;line-height:1.6;">
+        Auto — mobile devices lang lalabas.<br>
+        Always On — para sa desktop testing o tablet.
+      </div>
+    </div>
+  </div>
+  <div class="menuPage" id="pageModules">
+    <div class="label" style="font-size:11px;letter-spacing:5px;margin-bottom:8px;">Future Modules — Open in New Tab</div>
+    <div id="moduleLinks" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:760px;width:100%;margin-bottom:12px;"></div>
+    <div id="modulePager" style="display:flex;gap:10px;justify-content:center;align-items:center;margin-top:6px;">
+      <button id="modulePrev" style="padding:7px 22px;border:1px solid #f0a500;background:transparent;color:#f0a500;font-family:inherit;font-size:11px;letter-spacing:2px;cursor:pointer;">← PREV</button>
+      <span id="modulePageInfo" style="font-family:'Oswald',sans-serif;font-weight:600;color:#f0a500;font-size:12px;letter-spacing:2px;">PAGE 1 / 1</span>
+      <button id="moduleNext" style="padding:7px 22px;border:1px solid #f0a500;background:transparent;color:#f0a500;font-family:inherit;font-size:11px;letter-spacing:2px;cursor:pointer;">NEXT →</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     FLOW SCREEN 1: MODE SELECT
+     ========================================================= -->
+<div id="modeSelectScreen" class="flowScreen">
+  <div class="flowHeader">
+    <div class="flowStep">STEP 1 / 4</div>
+    <h1 class="flowTitle">SELECT GAME MODE</h1>
+    <div class="flowSubtitle">Choose how you want to play</div>
+  </div>
+  <div class="flowGrid" id="modeGrid"></div>
+  <div class="flowFooter">
+    <button class="flowBtn back" id="modeBackBtn">← BACK TO MENU</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     FLOW SCREEN 2: MAP SELECT
+     ========================================================= -->
+<div id="mapSelectScreen" class="flowScreen">
+  <div class="flowHeader">
+    <div class="flowStep">STEP 2 / 4</div>
+    <h1 class="flowTitle">SELECT MAP</h1>
+    <div class="flowSubtitle">Pick your battlefield</div>
+  </div>
+  <div class="flowGrid" id="mapGrid"></div>
+  <div class="flowFooter">
+    <button class="flowBtn back" id="mapBackBtn">← BACK</button>
+    <button class="flowBtn next" id="mapNextBtn" disabled>NEXT →</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     FLOW SCREEN 3: LOADING
+     ========================================================= -->
+<div id="loadingScreen" class="flowScreen">
+  <div class="flowHeader">
+    <div class="flowStep">PHASE 03 / 04</div>
+    <h1 class="flowTitle">SECURING THE ROUTE</h1>
+    <div class="flowSubtitle">Loading assets and combat AI...</div>
+  </div>
+  <div class="loadingBarWrap">
+    <div class="loadingBar"><div class="loadingBarFill" id="loadingBarFill"></div></div>
+    <div class="loadingText" id="loadingText">BUILDING WORLD</div>
+  </div>
+</div>
+
+<!-- =========================================================
+     FLOW SCREEN 4: FACTION SELECT
+     ========================================================= -->
+<div id="factionSelectScreen" class="flowScreen">
+  <div class="flowHeader">
+    <div class="flowStep">STEP 4 / 4</div>
+    <h1 class="flowTitle">CHOOSE FACTION</h1>
+    <div class="flowSubtitle">Pick your side</div>
+  </div>
+  <div class="flowGrid" id="factionGrid">
+    <div class="cardChoice merc" data-faction="merc">
+      <div class="name">MERCENARY</div>
+      <div class="desc">Elite private military.<br>Disciplined, tactical, armed.</div>
+    </div>
+    <div class="cardChoice cartel" data-faction="cartel">
+      <div class="name">CARTEL</div>
+      <div class="desc">Ruthless criminal syndicate.<br>Aggressive, relentless.</div>
+    </div>
+  </div>
+  <div class="flowFooter">
+    <button class="flowBtn back" id="factionBackBtn">← BACK</button>
+    <button class="flowBtn deploy" id="deployBtn">▶ DEPLOY</button>
+  </div>
+</div>
+
+<button id="devLoginBtn">[ DEV LOGIN ]</button>
+
+<div id="auth">
+  <div class="box">
+    <h2>⚙ DEV / ADMIN ACCESS</h2>
+    <p>Enter your developer password.</p>
+    <input id="authPass" type="password" placeholder="PASSWORD" autocomplete="off">
+    <div class="btns"><button class="cancel" id="authCancel">CANCEL</button><button id="authConfirm">UNLOCK</button></div>
+    <div class="err" id="authErr"></div>
+  </div>
+</div>
+
+<div id="hud" style="display:none">
+  <div id="crosshair">
+    <div class="ch-line ch-top"></div>
+    <div class="ch-line ch-bottom"></div>
+    <div class="ch-line ch-left"></div>
+    <div class="ch-line ch-right"></div>
+    <div class="ch-dot"></div>
+  </div>
+  <div id="crosshairName"></div>
+  <div id="hitmarker">✕</div>
+  <div class="panel" id="hp">HP 100</div>
+  <div class="panel" id="armorHud">KEVLAR: 0<br>HELMET: 0</div>
+  <div class="panel" id="money">$800</div>
+  <div class="panel" id="slotCounter">SLOTS 2 / 10</div>
+  <div class="panel" id="faction">MERCENARY</div>
+  <div id="devBadge">⚙ DEV MODE ACTIVE</div>
+  <div id="killfeed"></div>
+  <div class="panel" id="ammo">17 / 102</div>
+  <div id="weaponName">GLOCK 17</div>
+  <div class="panel" id="score">KILLS 0</div>
+  <div class="panel" id="teamScore">MERC 0 — 0 CARTEL</div>
+  <div class="panel" id="modeInfo">DEATHMATCH · FIRST TO 30</div>
+  <div id="timeHud"><span id="timeMap">MAP 30:00</span> · <span id="timeRound">ROUND 1:55</span></div>
+  <div id="streakBadge"></div>
+  <div id="commandIndicator"></div>
+  <div id="msg"></div>
+  <div id="respawnTimer"></div>
+  <div id="reloadHint">[R] RELOADING...</div>
+  <div id="pickupHint">[G] GRAB</div>
+  <div id="equipHud">[Q] NEXT · [F] USE · <span id="equipLabel">GRENADE</span> × <span id="equipCount">0</span></div>
+  <div id="actionPrompt">[F] PLANT BOMB</div>
+  <div id="godIndicator">★ GOD MODE ★</div>
+  <div class="hint">[B] SHOP · [Q] cycle · [F] use · [V] detonate<br>[G] grab/drop · [H] commands · [N] NVG · [T] TPS/FPS<br>[TAB] scoreboard · [M] radar · [RMB] aim · [C] crouch<br>[SPACE] jump · [Y] chat · [U] team · [ESC] menu</div>
+  <canvas id="minimap" width="170" height="170"></canvas>
+  <div id="mapZoomLabel">ZOOM: 100m</div>
+  <div id="weaponBar"></div>
+</div>
+
+<div id="killedBy">
+  <div class="kb-title">YOU WERE KILLED BY</div>
+  <div class="kb-killer" id="kbKillerName">-</div>
+  <div class="kb-weapon">with <span id="kbWeaponName">-</span></div>
+  <div class="kb-hint">[SPACE] RESPAWN · [V] SPECTATE</div>
+</div>
+
+<div id="chatBox">
+  <div id="chatLog"></div>
+  <div id="chatInputWrap">
+    <span id="chatPrefix">[ALL]</span>
+    <input id="chatInput" type="text" maxlength="120" autocomplete="off" spellcheck="false">
+  </div>
+</div>
+<div id="chatHint">[Y] ALL · [U] TEAM</div>
+
+<div id="spectatorHud">★ SPECTATING ★<div class="sub">[SPACE] respawn · [V] exit</div></div>
+<div id="nvOverlay"></div>
+<div id="flashOverlay"></div>
+
+<div id="commandMenu">
+  <div class="cmd-header">◄ SQUAD COMMANDS ►</div>
+  <div class="cmd-grid">
+    <button data-cmd="FOLLOW"><span>[1]</span> FOLLOW ME</button>
+    <button data-cmd="MOVE"><span>[2]</span> GO, GO, GO</button>
+    <button data-cmd="STORM"><span>[3]</span> STORM THE FRONT</button>
+    <button data-cmd="FALLBACK"><span>[4]</span> FALL BACK</button>
+    <button data-cmd="HOLD"><span>[5]</span> HOLD POSITION</button>
+    <button data-cmd="BACKUP"><span>[6]</span> NEED BACK UP</button>
+    <button data-cmd="POSITION"><span>[7]</span> GET IN POSITION</button>
+    <button data-cmd="TURRET"><span>[8]</span> SET UP TURRET</button>
+    <button data-cmd="MEDIC"><span>[9]</span> MEDIC!</button>
+    <button data-cmd="HIDE"><span>[0]</span> TAKE COVER</button>
+    <button data-cmd="HUNT"><span>[-]</span> FIND ENEMIES</button>
+    <button data-cmd="GRENADE"><span>[+]</span> FRAG OUT</button>
+  </div>
+  <div class="cmd-hint">[1–0,-,+] or click · [H]/[ESC] close</div>
+</div>
+
+<div id="quickAdmin">
+  <h4>⚙ QUICK ADMIN</h4>
+  <button data-cmd="addmoney 5000">+ $5000</button>
+  <button data-cmd="god">Toggle God</button>
+  <button data-cmd="heal">Full Heal</button>
+  <button data-cmd="giveall">Give All Weapons</button>
+  <button data-cmd="spawn_enemy 3 heavy">+3 Heavy Enemies</button>
+  <button data-cmd="killall">Kill All Enemies</button>
+  <button id="qaOpenDev">🛠 Open Crafter [F1]</button>
+  <button id="qaOpenConsole">🖥 Open Console [F2]</button>
+  <button id="qaLogout" style="border-color:#ff5555;color:#ff5555;">⏻ Logout</button>
+</div>
+
+<div id="scoreboard">
+  <div class="sb-header">
+    <div class="sb-title">NEW STRIKE</div>
+    <div class="sb-map">MAP: <span id="sbMapName">DUST OUTPOST</span></div>
+    <div class="sb-mode" id="sbMode">DEATHMATCH</div>
+  </div>
+  <div class="sb-teams">
+    <div class="sb-team merc">
+      <div class="sb-team-header">MERCENARIES</div>
+      <div class="sb-team-score" id="sbMercScore">0</div>
+      <div class="sb-team-count" id="sbMercCount">ALIVE: 0 / 0</div>
+      <div class="sb-list" id="sbMercList"></div>
+    </div>
+    <div class="sb-team cartel">
+      <div class="sb-team-header">CARTEL</div>
+      <div class="sb-team-score" id="sbCartelScore">0</div>
+      <div class="sb-team-count" id="sbCartelCount">ALIVE: 0 / 0</div>
+      <div class="sb-list" id="sbCartelList"></div>
+    </div>
+  </div>
+  <div class="sb-footer">HOLD [TAB]</div>
+</div>
+
+<div id="vignette"></div>
+<div id="damageFlash"></div>
+<div id="deathOverlay"><div class="dtext">YOU DIED</div></div>
+<div id="scopeOverlay"><div class="lens"></div><div class="cross-h"></div><div class="cross-v"></div></div>
+
+<div id="overlay">
+  <h2 id="ovTitle">PAUSED</h2>
+  <p id="ovSub"></p>
+  <p class="go">▶ CLICK TO RESUME</p>
+  <div class="btns">
+    <button id="changeTeamBtn" class="team">⇄ CHANGE TEAM</button>
+    <button id="disconnectBtn" class="danger">⏻ DISCONNECT</button>
+  </div>
+</div>
+
+<div id="shop">
+  <div id="shopHeader">
+    <h2>⚡ BLACK MARKET</h2>
+    <div class="cash" id="shopCash">$0</div>
+    <button class="btn" id="shopClose">[B] CLOSE</button>
+  </div>
+  <div id="shopTabs"></div>
+  <div id="shopGrid"></div>
+</div>
+
+<div id="console"><div id="consoleLog"></div><div id="consoleInput"><span>&gt;</span><input id="consoleCmd" type="text" placeholder="command" autocomplete="off"></div></div>
+
+<div id="quitScreen">
+  <h1>THANKS FOR PLAYING</h1>
+  <div class="sub">NEW STRIKE</div>
+  <div class="credit">created by <b>Louie Brian Gonzaga</b></div>
+  <div class="btns"><button class="back" id="quitBack">← BACK</button><button id="quitClose">✕ CLOSE</button></div>
+</div>
+
+<div id="bagPanel">
+  <div class="bagHeader">
+    <h2>⚔ MILITARY BAG</h2>
+    <div id="bagInfo">ITEMS: 0 / 20</div>
+    <button class="btn" id="bagClose">[P] CLOSE</button>
+  </div>
+  <div id="bagGrid"></div>
+  <div class="bagFooter">LMB EQUIP · RMB DROP</div>
+</div>
+
+<!-- ============================================================
+     MOBILE TOUCH CONTROLS
+     ============================================================ -->
+<div id="mobileControls" style="display:none">
+    <!-- Edit mode hint + buttons (hidden by default) -->
+  <div id="mEditBar" style="display:none">
+    <div class="m-edit-hint">DRAG BUTTONS TO REPOSITION</div>
+    <button id="mEditSave"  class="m-edit-btn save">✓ SAVE</button>
+    <button id="mEditReset" class="m-edit-btn reset">↺ RESET</button>
+    <button id="mEditCancel" class="m-edit-btn cancel">✕ CANCEL</button>
+  </div>
+
+  <!-- Right look zone (transparent, right half) -->
+  <div id="mLookZone"></div>
+
+  <!-- Left joystick -->
+  <div id="mJoystick">
+    <div class="mjs-base"></div>
+    <div class="mjs-knob" id="mJoystickKnob"></div>
+  </div>
+
+  <!-- Action buttons -->
+  <button class="mbtn m-fire"   id="mFire">🔥</button>
+  <button class="mbtn m-aim"    id="mAim">🎯</button>
+  <button class="mbtn m-reload" id="mReload">↻</button>
+  <button class="mbtn m-crouch" id="mCrouch">⤓</button>
+  <button class="mbtn m-jump"   id="mJump">⤒</button>
+  <button class="mbtn m-switch" id="mSwitch">↔</button>
+  <button class="mbtn m-use"    id="mUse">⚡</button>
+  <button class="mbtn m-interact" id="mInteract">E</button>
+  <button class="mbtn m-shop"   id="mShop">$</button>
+  <button class="mbtn m-grab"   id="mGrab">G</button>
+  <button class="mbtn m-pause"  id="mPause">⏸</button>
+</div>
+
+
+
+
+<script type="module" src="js/asset_loader.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
+
+
+
