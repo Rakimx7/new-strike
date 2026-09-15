@@ -3588,6 +3588,8 @@ window._shoot              = () => { if(typeof shoot === 'function') shoot(); };
 window._startReload        = () => { if(typeof startReload === 'function') startReload(); };
 window._switchWeapon       = (id) => { if(typeof switchWeapon === 'function') switchWeapon(id); };
 window._handleInteractKey  = () => { if(typeof handleInteractKey === 'function') handleInteractKey(); };
+window._useEquip    = () => { if(typeof useCurrentEquip === 'function') useCurrentEquip(); };
+window._cycleEquip  = () => { if(typeof cycleEquip === 'function') cycleEquip(); };
 window._openShop           = () => { if(typeof openShop === 'function') openShop(); };
 
 

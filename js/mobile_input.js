@@ -84,6 +84,7 @@ export function initMobileControls(keysRef){
   setupLookZone();
   setupButtons();
   setupWeaponBarTouch();
+  setupEquipHudTouch();
 
   console.log('[MobileInput] Touch controls active');
   showIOSHint();
@@ -92,120 +93,7 @@ export function initMobileControls(keysRef){
 }
 
 
-// ═══════════════════════════════════════════════════════════
-// AUTO-AIM — mobile only
-//  - When fire held or ADS held → snap toward nearest enemy
-//  - Smoothly rotates player yaw/pitch within a view cone
-// ═══════════════════════════════════════════════════════════
-const AUTO_AIM = {
-  maxDistance:    50,      // max range
-  coneAngle:      0.35,    // ~20 degrees each side
-  aimSpeedFire:   0.12,    // lerp speed when firing
-  aimSpeedADS:    0.22,    // faster snap when ADS
-  enabled:        true
-};
 
-export function updateAutoAim(){
-  if(!AUTO_AIM.enabled) return;
-  if(!S.mobile) return;
-
-  const wantAim = S.mobile.fireHeld || S.mobile.adsHeld;
-  if(!wantAim) return;
-  if(!S.player || !S.player.alive) return;
-  if(S.spectatorMode) return;
-  if(S.gameState !== 'playing') return;
-  if(S.cannonOperating) return;
-
-  // Skip kung naka-melee (walang auto-aim sa knife)
-  const w = window._getWeapon ? window._getWeapon(S.currentWeaponKey) : null;
-  if(!w || w.melee) return;
-
-  // Get enemies
-  const bots = window._getAllBots ? window._getAllBots() : [];
-  if(!bots.length) return;
-
-  const pd = S.player.pos;
-  const yaw = S.player.yaw;
-  const pitch = S.player.pitch;
-
-  // Forward vector (with pitch)
-  const cp = Math.cos(pitch);
-  const fx = -Math.sin(yaw) * cp;
-  const fy = Math.sin(pitch);
-  const fz = -Math.cos(yaw) * cp;
-
-  let best = null;
-  let bestDot = Math.cos(AUTO_AIM.coneAngle);   // dot threshold
-  let bestDist = Infinity;
-
-  for(const b of bots){
-    if(!b.alive) continue;
-    // Skip teammates (except FFA / infection)
-    if(S.gameMode !== 'ffa' && S.gameMode !== 'infection' && b.team === S.playerTeam) continue;
-
-    // Target: chest height
-    const scaleY = (b.mesh.scale && b.mesh.scale.y) || 1;
-    const tx = b.mesh.position.x;
-    const ty = b.mesh.position.y + 1.2 * scaleY;
-    const tz = b.mesh.position.z;
-
-    const dx = tx - pd.x;
-    const dy = ty - pd.y;
-    const dz = tz - pd.z;
-
-    const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
-    if(dist > AUTO_AIM.maxDistance) continue;
-
-    // Normalize direction
-    const nx = dx / dist;
-    const ny = dy / dist;
-    const nz = dz / dist;
-
-    const dot = nx * fx + ny * fy + nz * fz;
-    if(dot > bestDot && dist < bestDist){
-      bestDot = dot;
-      bestDist = dist;
-      best = { bot: b, tx, ty, tz, dist };
-    }
-  }
-
-  if(!best) return;
-
-  // Compute target yaw/pitch
-  const dx = best.tx - pd.x;
-  const dy = best.ty - pd.y;
-  const dz = best.tz - pd.z;
-
-  const targetYaw   = Math.atan2(-dx, -dz);
-  const targetPitch = Math.atan2(dy, Math.hypot(dx, dz));
-
-  // Lerp speed depends on ADS state
-  const speed = S.adsActive ? AUTO_AIM.aimSpeedADS : AUTO_AIM.aimSpeedFire;
-
-  // Yaw — shortest path
-  let dyaw = targetYaw - S.player.yaw;
-  while(dyaw >  Math.PI) dyaw -= Math.PI * 2;
-  while(dyaw < -Math.PI) dyaw += Math.PI * 2;
-
-  S.player.yaw += dyaw * speed;
-  S.player.pitch += (targetPitch - S.player.pitch) * speed;
-  S.player.pitch = Math.max(-1.45, Math.min(1.45, S.player.pitch));
-}
-
-export function setAutoAimEnabled(v){
-  AUTO_AIM.enabled = !!v;
-  try { localStorage.setItem('newstrike_autoaim', AUTO_AIM.enabled ? '1' : '0'); } catch(e){}
-}
-export function isAutoAimEnabled(){
-  return AUTO_AIM.enabled;
-}
-
-// Load saved setting
-try {
-  const saved = localStorage.getItem('newstrike_autoaim');
-  if(saved === '0') AUTO_AIM.enabled = false;
-  else if(saved === '1') AUTO_AIM.enabled = true;
-} catch(e){}
 
 
 
@@ -373,8 +261,7 @@ function setupWeaponBarTouch(){
   const bar = document.getElementById('weaponBar');
   if(!bar) return;
 
-  // Use event delegation (slots are re-created dynamically)
-  const handleTouch = (e) => {
+  const handleWeaponTap = (e) => {
     const slot = e.target.closest('.slot');
     if(!slot) return;
     e.preventDefault();
@@ -384,17 +271,31 @@ function setupWeaponBarTouch(){
     const idx = slots.indexOf(slot);
     if(idx < 0) return;
 
-    // Switch to the weapon at this index
     if(S.ownedWeapons && S.ownedWeapons[idx]){
       if(window._switchWeapon) window._switchWeapon(S.ownedWeapons[idx]);
       if(navigator.vibrate) navigator.vibrate(15);
     }
   };
 
-  bar.addEventListener('touchstart', handleTouch, { passive: false });
-  bar.addEventListener('click', handleTouch);   // para gumana rin sa desktop test
+  bar.addEventListener('touchstart', handleWeaponTap, { passive: false });
+  bar.addEventListener('click', handleWeaponTap);
 }
 
+// ⭐ Equip HUD tap-to-cycle
+function setupEquipHudTouch(){
+  const hud = document.getElementById('equipHud');
+  if(!hud) return;
+
+  const handleTap = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if(window._cycleEquip) window._cycleEquip();
+    if(navigator.vibrate) navigator.vibrate(15);
+  };
+
+  hud.addEventListener('touchstart', handleTap, { passive: false });
+  hud.addEventListener('click', handleTap);
+}
 
 
 
@@ -468,9 +369,15 @@ function setupButtons(){
     if(window._switchWeapon) window._switchWeapon(S.ownedWeapons[i]);
   });
 
-  // USE (F) — hold for plant/defuse/grenade
+  // USE (F) — hold for S&D plant/defuse, tap for equipment
   bindHold('mUse',
-    () => { _keys['KeyF'] = true; },
+    () => {
+      _keys['KeyF'] = true;
+      // Sa ibang modes, direct gamitin ang equipment (hindi nag-trigger ng keyboard)
+      if(S.gameMode !== 'sd' && window._useEquip){
+        window._useEquip();
+      }
+    },
     () => { _keys['KeyF'] = false; }
   );
 

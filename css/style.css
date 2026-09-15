@@ -1974,3 +1974,73 @@ body.commandMenuOpen #devLoginBtn {
     padding-right: 90px !important;
   }
 }
+
+
+
+/* ⭐ Weapon bar — mobile tap fix */
+@media (max-width: 900px), (max-height: 500px) {
+  #weaponBar {
+    z-index: 10001 !important;
+    pointer-events: auto !important;
+    bottom: 4px !important;
+  }
+  #weaponBar .slot {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+  }
+
+  /* ⭐ Shrink look zone so it doesn't cover weapon bar */
+  #mLookZone {
+    bottom: 56px !important;
+    height: calc(100% - 56px) !important;
+  }
+}
+
+
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE: WEAPON BAR + EQUIP HUD TAP FIX
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 900px), (max-height: 500px) {
+
+  /* Shrink look zone — huwag i-cover ang bottom 90px */
+  #mLookZone {
+    height: calc(100% - 90px) !important;
+    bottom: 90px !important;
+    top: 0 !important;
+  }
+
+  /* Weapon bar — nasa ibabaw ng lahat ng mobile controls */
+  #weaponBar {
+    z-index: 10001 !important;
+    pointer-events: auto !important;
+    bottom: 6px !important;
+    max-width: 70% !important;
+    transform: translateX(-50%) !important;
+  }
+  #weaponBar .slot {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    cursor: pointer !important;
+    min-height: 28px !important;
+    padding: 4px 10px !important;
+    font-size: 10px !important;
+  }
+  #weaponBar .slot.active {
+    box-shadow: 0 0 12px rgba(240,165,0,.6), inset 0 0 8px rgba(240,165,0,.15) !important;
+  }
+
+  /* Equipment HUD — tappable */
+  #equipHud {
+    z-index: 10001 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    bottom: 42px !important;
+    padding: 6px 14px !important;
+    cursor: pointer !important;
+  }
+  #equipHud:active {
+    background: rgba(240,165,0,.3) !important;
+    color: #0a0202 !important;
+  }
+}
