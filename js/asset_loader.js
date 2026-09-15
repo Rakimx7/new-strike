@@ -2,15 +2,15 @@
 // NEW STRIKE — Asset Loader + Quit Button Fix
 // =========================================================
 window.GAME_ASSETS = {
-  introBg:        '/assets/images/intro-bg.jpg',
-  menuBg:         '/assets/images/menu-bg.jpg',
-  loading1Bg:     '/assets/images/loading-1.jpg',
-  loading2Bg:     '/assets/images/loading-2.jpg',
-  loading3Bg:     '/assets/images/loading-3.jpg',
-  factionMerc:    '/assets/images/faction-merc.jpg',
-  factionCartel:  '/assets/images/faction-cartel.jpg',
-  logo:           '/assets/images/logo.jpg',
-  devPic:         '/assets/images/dev.jpg'
+  introBg:        './assets/images/intro-bg.jpg',
+  menuBg:         './assets/images/menu-bg.jpg',
+  loading1Bg:     './assets/images/loading-1.jpg',
+  loading2Bg:     './assets/images/loading-2.jpg',
+  loading3Bg:     './assets/images/loading-3.jpg',
+  factionMerc:    './assets/images/faction-merc.jpg',
+  factionCartel:  './assets/images/faction-cartel.jpg',
+  logo:           './assets/images/logo.jpg',
+  devPic:         './assets/images/dev.jpg'
 };
 
 function preloadAsset(url){
