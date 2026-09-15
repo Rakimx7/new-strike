@@ -1,4 +1,4 @@
-import { initMobileControls, initLayoutEditor } from './mobile_input.js';
+import { initMobileControls, initLayoutEditor, goFullscreen, exitFullscreen, isFullscreen } from './mobile_input.js';
 if(!S.mobile) S.mobile = { fireHeld: false, adsHeld: false };
 import * as THREE from 'three';
 import {
@@ -2092,7 +2092,12 @@ function initMenuFlow(){
   if(factionBackBtn) factionBackBtn.onclick = () => { renderMapGrid(); showFlowScreen('mapSelectScreen'); };
 
   const deployBtn = document.getElementById('deployBtn');
-  if(deployBtn) deployBtn.onclick = () => {
+  if(deployBtn) deployBtn.onclick = async () => {
+    // ⭐ Request fullscreen BEFORE starting game (user gesture requirement)
+    if(document.body.classList.contains('is-mobile') || ('ontouchstart' in window)){
+      try { await goFullscreen(); } catch(e){}
+    }
+
     menuFaction = flowState.faction;
     menuMode = flowState.mode;
     startGame();

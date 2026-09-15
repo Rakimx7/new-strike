@@ -1813,3 +1813,34 @@ body:not(.is-mobile) #mobileControls { display: none !important; }
   border: 1px dashed rgba(255,255,255,.4);
   pointer-events: none;
 }
+
+
+/* Fullscreen toggle button */
+.m-fullscreen { width: 42px; height: 42px; left: 12px; top: 62px; font-size: 16px; }
+
+/* iOS PWA-style — hide address bar by filling viewport */
+@supports (-webkit-touch-callout: none) {
+  html, body {
+    height: -webkit-fill-available;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  /* For iOS users — instruct to use "Add to Home Screen" for true fullscreen */
+  .ios-fullscreen-hint {
+    position: fixed;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,.85);
+    color: #ffd75e;
+    padding: 6px 14px;
+    border: 1px solid #f0a500;
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    z-index: 99999;
+    pointer-events: none;
+    border-radius: 3px;
+  }
+}

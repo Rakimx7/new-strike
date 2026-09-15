@@ -85,6 +85,7 @@ export function initMobileControls(keysRef){
   setupButtons();
 
   console.log('[MobileInput] Touch controls active');
+  showIOSHint();
   return true;
 }
 
@@ -217,6 +218,38 @@ function setupLookZone(){
   zone.addEventListener('touchcancel', end);
 }
 
+
+
+
+
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true;
+}
+
+function showIOSHint(){
+  if(!isIOS() || isStandalone()) return;
+  // Show once per session
+  if(sessionStorage.getItem('ios_hint_shown')) return;
+  sessionStorage.setItem('ios_hint_shown', '1');
+
+  const hint = document.createElement('div');
+  hint.className = 'ios-fullscreen-hint';
+  hint.textContent = '💡 Add to Home Screen for fullscreen';
+  document.body.appendChild(hint);
+  setTimeout(() => hint.remove(), 5000);
+}
+
+
+
+
+
+
+
 // ═══════════════════════════════════════════════════════════
 // ACTION BUTTONS
 // ═══════════════════════════════════════════════════════════
@@ -308,6 +341,15 @@ function setupButtons(){
     if(window._mobileTogglePause) window._mobileTogglePause();
   });
 
+    // FULLSCREEN — toggle fullscreen mode
+  bindTap('mFullscreen', async () => {
+    if(isFullscreen()){
+      exitFullscreen();
+    } else {
+      await goFullscreen();
+    }
+  });
+
 
   // SHOP (B)
   bindTap('mShop', () => {
@@ -322,7 +364,7 @@ function setupButtons(){
 // ═══════════════════════════════════════════════════════════
 const EDITABLE_IDS = [
   'mJoystick', 'mFire', 'mAim', 'mReload', 'mJump',
-  'mCrouch', 'mSwitch', 'mUse', 'mInteract', 'mShop', 'mGrab', 'mPause'
+  'mCrouch', 'mSwitch', 'mUse', 'mInteract', 'mShop', 'mGrab', 'mPause', 'mFullscreen'
 ];
 
 let _editMode = false;
@@ -601,4 +643,51 @@ export function initLayoutEditor(){
       if(window._showMsg) window._showMsg('LAYOUT RESET', 1200);
     });
   }
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// FULLSCREEN + ORIENTATION
+// ═══════════════════════════════════════════════════════════
+export async function goFullscreen(){
+  const el = document.documentElement;
+
+  // Request fullscreen (must be in user gesture)
+  try {
+    if(el.requestFullscreen) {
+      await el.requestFullscreen({ navigationUI: 'hide' });
+    } else if(el.webkitRequestFullscreen) {
+      await el.webkitRequestFullscreen();
+    } else if(el.mozRequestFullScreen) {
+      await el.mozRequestFullScreen();
+    }
+  } catch(e){
+    console.warn('[Fullscreen] request failed:', e);
+  }
+
+  // Try to lock to landscape (only works after fullscreen)
+  try {
+    if(screen.orientation && screen.orientation.lock){
+      await screen.orientation.lock('landscape');
+    }
+  } catch(e){
+    console.warn('[Orientation] lock failed:', e);
+  }
+
+  // iOS fallback: scroll to hide address bar (iOS Safari)
+  setTimeout(() => {
+    window.scrollTo(0, 1);
+  }, 150);
+}
+
+export function exitFullscreen(){
+  try {
+    if(document.exitFullscreen) document.exitFullscreen();
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    else if(document.mozCancelFullScreen) document.mozCancelFullScreen();
+  } catch(e){}
+}
+
+export function isFullscreen(){
+  return !!(document.fullscreenElement || document.webkitFullscreenElement);
 }
