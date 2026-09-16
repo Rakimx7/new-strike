@@ -347,6 +347,67 @@ function getTurretMult(w){
   return 1;
 }
 
+
+// =========================================================
+// ⭐ FLAMETHROWER JET — short-range fire spray
+// =========================================================
+export function spawnFlameJet(origin, dir, range){
+  const PUFFS = 6;
+
+  // Muzzle glow
+  const light = new THREE.PointLight(0xff8030, 10, 8);
+  light.position.copy(origin);
+  scene.add(light);
+  setTimeout(() => scene.remove(light), 100);
+
+  for(let i = 0; i < PUFFS; i++){
+    const t = (i + 1) / (PUFFS + 1);
+    const dist = t * range;
+
+    // Forward + random organic offset
+    const pos = origin.clone().addScaledVector(dir, dist);
+    const perpMag = 0.12 + t * 0.85;
+    pos.x += (Math.random() - 0.5) * perpMag;
+    pos.y += (Math.random() - 0.5) * perpMag * 0.6;
+    pos.z += (Math.random() - 0.5) * perpMag;
+
+    // Flame cone size — maliit sa simula, lumalaki sa dulo
+    const radius = 0.20 + t * 0.60;
+    const height = 0.35 + t * 1.20;
+    const geo = new THREE.ConeGeometry(radius, height, 6);
+
+    // Color gradient
+    let color;
+    if(t < 0.25)      color = 0xffe866;
+    else if(t < 0.55) color = 0xffb040;
+    else if(t < 0.80) color = 0xff6030;
+    else              color = 0xa02020;
+
+    const mat = new THREE.MeshBasicMaterial({
+      color: color,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    const cone = new THREE.Mesh(geo, mat);
+    cone.position.copy(pos);
+    cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+    cone.rotateY(Math.random() * Math.PI * 2);
+    scene.add(cone);
+
+    S.tracers.push({
+      t: cone,
+      life: 0.12 + Math.random() * 0.10,
+      isFlame: true,
+      mat: mat
+    });
+  }
+}
+
+
+
+
 export function fireBulletRay(w, spread, range, color){
   const { origin, dir } = getAimRay(spread);
 
@@ -500,13 +561,16 @@ export function fireBulletRay(w, spread, range, color){
     return;
   }
 
+  // ⭐ Flamethrower — walang tracer line, puro cones lang
+  if(w.flamethrower) return;
+
   // Standard tracer line for other weapons
   const t = new THREE.Line(
     new THREE.BufferGeometry().setFromPoints([muzzleStart, endPoint]),
     new THREE.LineBasicMaterial({ color: tracerColor, transparent:true, opacity:0.75 })
   );
   scene.add(t);
-  S.tracers.push({ t, life: w.flamethrower ? 0.10 : 0.05 });
+  S.tracers.push({ t, life: 0.05 });
 }
 
 export function flashHitmarker(){
@@ -617,8 +681,15 @@ export function shoot(){
     if(st.ammo<=0){ startReload(); return; }
     st.ammo--; S.fireCooldown = w.fireRate;
     S.recoil = Math.min(S.recoil + 0.005, 0.04);
-    muzzleFlash(); beep(80,0.05,'sawtooth',0.12);
-    fireBulletRay(w, 0.09, 10, 0xff8030); return;
+    muzzleFlash(); beep(70,0.08,'sawtooth',0.15);
+
+    // ⭐ Fire spray visual
+    const { origin, dir } = getAimRay(0);
+    spawnFlameJet(origin, dir, w.maxRange || 10);
+
+    // ⭐ Damage via hitscan (spread for accuracy variance)
+    fireBulletRay(w, 0.05, w.maxRange || 10, 0xff8030);
+    return;
   }
 
   if(w.category==='shotgun'){

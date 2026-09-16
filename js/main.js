@@ -2247,7 +2247,11 @@ if(authConfirm) authConfirm.onclick = () => {
 if(authPass) authPass.addEventListener('keydown', e => { if(e.code === 'Enter' && authConfirm) authConfirm.click(); });
 function updateDevUI(){
   const btn = document.getElementById('devLoginBtn');
-  if(btn) btn.textContent = S.isAdmin ? '[ DEV ✓ ]' : '[ DEV LOGIN ]';
+  if(btn){
+    btn.textContent = S.isAdmin ? '[ DEV ✓ ]' : '[ DEV LOGIN ]';
+    // ⭐ Show lang sa menu, hide sa game
+    btn.style.display = (S.gameState === 'menu') ? 'block' : 'none';
+  }
   const qa = document.getElementById('quickAdmin');
   if(qa) qa.style.display = (S.isAdmin && S.gameState === 'playing') ? 'flex' : 'none';
 }
@@ -2385,6 +2389,7 @@ function startGame(){
   const hud = document.getElementById('hud'); if(hud) hud.style.display = 'block';
 
   S.gameState = 'playing'; S.gamePaused = false;
+  updateDevUI();   // ⭐ hide dev login habang naglalaro
   S.mercScore = 0; S.cartelScore = 0; S.kills = 0; S.player.kills = 0;
   S.round = 1; S.sdRound = 1;
   S.buyPhaseActive = false;
@@ -3459,6 +3464,15 @@ function animate(){
         tr.ringMat.opacity = 0.6 * (1 - t);
       }
 
+
+            // ⭐ FLAME cleanup — lumalaki + nag-fade
+      if(tr.isFlame && tr.life > 0){
+        tr.t.scale.multiplyScalar(1 + dt * 5);
+        if(tr.mat) tr.mat.opacity = Math.max(0, tr.mat.opacity - dt * 7);
+      }
+
+    
+      
       if(tr.life <= 0){
         const obj = tr.t;
         scene.remove(obj);

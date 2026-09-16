@@ -1953,17 +1953,31 @@ body.commandMenuOpen #devLoginBtn {
 /* ⭐ Full mobile-friendly shop close button */
 @media (max-width: 900px), (max-height: 500px) {
   #shopClose {
-    position: absolute;
-    top: 8px;
-    right: 8px;
+    position: fixed !important;
+    top: auto !important;
+    bottom: 12px !important;
+    right: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     z-index: 100;
-    padding: 8px 16px !important;
-    font-size: 12px !important;
-    letter-spacing: 2px !important;
-    border: 2px solid #f0a500 !important;
+    padding: 6px 20px !important;
+    font-size: 10px !important;
+    letter-spacing: 1.5px !important;
+    border: 1px solid #f0a500 !important;
     background: rgba(10,6,2,.95) !important;
     color: #ffd75e !important;
+    border-radius: 4px;
   }
+  #shopClose:active {
+    background: #f0a500 !important;
+    color: #0a0202 !important;
+  }
+
+  /* Bawasan yung padding sa header para hindi sumapawan */
+  #shopHeader {
+    padding-right: 30px !important;
+  }
+  
   #shopClose:active {
     background: #f0a500 !important;
     color: #0a0202 !important;
@@ -2146,6 +2160,43 @@ body.commandMenuOpen #devLoginBtn {
     height: calc(100% - 100px) !important;
     bottom: auto !important;
   }
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   Hide HUD elements kapag shop open
+   ═══════════════════════════════════════════════════════ */
+body.shopOpen #minimap,
+body.shopOpen #mapZoomLabel,
+body.shopOpen #score,
+body.shopOpen #teamScore,
+body.shopOpen #modeInfo,
+body.shopOpen #timeHud,
+body.shopOpen #killfeed,
+body.shopOpen #chatBox,
+body.shopOpen #chatHint,
+body.shopOpen #weaponBar,
+body.shopOpen #equipHud,
+body.shopOpen #hp,
+body.shopOpen #armorHud,
+body.shopOpen #money,
+body.shopOpen #slotCounter,
+body.shopOpen #faction,
+body.shopOpen #ammo,
+body.shopOpen #weaponName,
+body.shopOpen #hitmarker,
+body.shopOpen #streakBadge {
+  display: none !important;
+}
+
+/* Same kapag console open */
+body.consoleOpen #minimap,
+body.consoleOpen #mapZoomLabel,
+body.consoleOpen #score,
+body.consoleOpen #teamScore,
+body.consoleOpen #modeInfo,
+body.consoleOpen #timeHud {
+  display: none !important;
 }
 
 

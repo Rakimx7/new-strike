@@ -580,6 +580,30 @@ function damageAtRange(w, dist){
   return 1 - t*(1-(w.falloff ?? 0.7));
 }
 
+// ⭐ Difficulty multipliers para sa bots
+// S.AI_TUNING.accuracy: 0.5 (EASY) / 0.8 (NORMAL) / 1.2 (HARD) / 1.8 (EXPERT) / 2.5 (INSANE)
+function getDifficultyMultipliers(){
+  const acc = (S.AI_TUNING && S.AI_TUNING.accuracy) || 1.0;
+
+  let speedMult = 1.0, accMult = 1.0, fireRateMult = 1.0;
+
+  if(acc <= 0.55){           // EASY
+    speedMult = 0.55; accMult = 0.40; fireRateMult = 2.20;
+  } else if(acc <= 0.85){    // NORMAL
+    speedMult = 0.75; accMult = 0.65; fireRateMult = 1.50;
+  } else if(acc <= 1.25){    // HARD
+    speedMult = 1.00; accMult = 1.00; fireRateMult = 1.00;
+  } else if(acc <= 1.85){    // EXPERT
+    speedMult = 1.15; accMult = 1.15; fireRateMult = 0.85;
+  } else {                   // INSANE
+    speedMult = 1.30; accMult = 1.30; fireRateMult = 0.70;
+  }
+
+  return { speedMult, accMult, fireRateMult };
+}
+
+
+
 export function updateBots(dt){
   const player = S.player;
   if(!player) return;
@@ -1013,10 +1037,12 @@ export function updateBots(dt){
     if(moveDir.lengthSq() > 0.001){
       const speedMul = 1.0;
 
-            const botWep = getWeapon(b.weaponId);
+            const _diff = getDifficultyMultipliers();
+      const botWep = getWeapon(b.weaponId);
       const isMelee = (botWep && botWep.melee);
       const meleeBoost = 1.0;
-      const GLOBAL_BOT_RUN = isMelee ? 1.0 : 1.85;
+      const baseRun = isMelee ? 1.0 : 1.85;
+      const GLOBAL_BOT_RUN = baseRun * _diff.speedMult;
       const sdBoost = (S.gameMode === 'sd') ? 1.35 : 1.15;
 
       let plantedBoost = 1.0;
@@ -1226,6 +1252,7 @@ export function updateBots(dt){
     /* ──── 8. SHOOT / MELEE ──── */
     b.fireT -= dt;
     if(shouldShoot && bestTarget && b.fireT <= 0 && S.roundActive){
+    const _diff2 = getDifficultyMultipliers();
       // ⭐ MELEE BOT — slash lang, walang tracer
       if(wep.melee){
         const dist = p.distanceTo(bestTarget.pos);
@@ -1272,7 +1299,7 @@ export function updateBots(dt){
       }
 
       // === RANGED WEAPON (normal shooting) ===
-      b.fireT = Math.max(0.08, wep.fireRate * 1.15 + Math.random() * 0.15);
+      b.fireT = Math.max(0.08, (wep.fireRate * 1.15 + Math.random() * 0.15) * _diff2.fireRateMult);
       if(b.fireT < 0.08) b.fireT = 0.08;
 
       const from = p.clone().setY(1.35);
@@ -1282,7 +1309,7 @@ export function updateBots(dt){
       if(losClear(from, to)){
         const baseAcc = (S.AI_TUNING && S.AI_TUNING.accuracy) || 1.0;
         const distPenalty = Math.max(0.55, 1 - dist * 0.006);
-        const hitChance = Math.min(0.92, baseAcc * 0.85 * distPenalty * (b.accuracy || 1) * 1.4);
+        const hitChance = Math.min(0.92, baseAcc * 0.85 * distPenalty * (b.accuracy || 1) * 1.4 * _diff2.accMult);
         const willHit = Math.random() < hitChance;
 
         const tracerEnd = willHit

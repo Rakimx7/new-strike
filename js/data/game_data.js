@@ -341,11 +341,11 @@ export const BASE_WEAPONS = {
   },
   flamer: {
     name:'FLAMETHROWER', category:'flamethrower',
-    mag:200, dmg:40, headMul:1.0, reserveMax:400,
-    fireRate:0.05, reloadMs:3500, auto:true,
-    spread:0.08, price:4500, color:0x8a3a1a,
+    mag:200, dmg:10, headMul:1.0, reserveMax:400,
+    fireRate:0.04, reloadMs:3500, auto:true,
+    spread:0.20, price:4500, color:0x8a3a1a,
     flamethrower:true,
-    maxRange:20
+    maxRange:10
   },
   cannon: {
     name:'ARTILLERY CANNON', category:'cannon',
