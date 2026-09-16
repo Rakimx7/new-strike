@@ -2044,3 +2044,108 @@ body.commandMenuOpen #devLoginBtn {
 }
 
 
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE: WEAPON BAR + EQUIP HUD TAP FIX
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 900px), (max-height: 500px) {
+
+  /* Weapon bar — nasa TAAS ng lahat at clickable */
+  #weaponBar {
+    z-index: 20000 !important;
+    pointer-events: auto !important;
+    bottom: 8px !important;
+  }
+  #weaponBar .slot {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    cursor: pointer !important;
+    padding: 6px 10px !important;
+    min-height: 32px !important;
+    font-size: 10px !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  #weaponBar .slot:active {
+    background: rgba(240,165,0,.4) !important;
+    transform: scale(0.95) !important;
+  }
+
+  /* Equip HUD — tappable */
+  #equipHud {
+    z-index: 20000 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    cursor: pointer !important;
+    bottom: 52px !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  #equipHud:active {
+    background: rgba(240,165,0,.35) !important;
+    color: #0a0202 !important;
+  }
+
+  /* ⭐ Look zone — huwag i-cover ang weapon bar area */
+  #mLookZone {
+    top: 0 !important;
+    height: calc(100% - 100px) !important;
+    bottom: auto !important;
+  }
+}
+
+
+
+
+@media (max-width: 900px), (max-height: 500px) {
+
+  /* ⭐ Boost HUD stacking context — nasa ibabaw ng lahat ng mobile controls */
+  #hud {
+    z-index: 10000 !important;
+  }
+
+  /* Weapon bar — clickable at nasa ibabaw */
+  #weaponBar {
+    z-index: 10001 !important;
+    pointer-events: auto !important;
+    bottom: 8px !important;
+  }
+  #weaponBar .slot {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    cursor: pointer !important;
+    padding: 6px 10px !important;
+    min-height: 32px !important;
+    font-size: 10px !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  #weaponBar .slot:active {
+    background: rgba(240,165,0,.5) !important;
+    transform: scale(0.94) !important;
+  }
+
+  /* Equip HUD — clickable */
+  #equipHud {
+    z-index: 10001 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    cursor: pointer !important;
+    bottom: 52px !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  #equipHud:active {
+    background: rgba(240,165,0,.4) !important;
+    color: #0a0202 !important;
+  }
+
+  /* Shrink look zone para hindi sakop ang weapon bar */
+  #mLookZone {
+    top: 0 !important;
+    height: calc(100% - 100px) !important;
+    bottom: auto !important;
+  }
+}
+
+
