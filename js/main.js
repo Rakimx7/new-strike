@@ -1,4 +1,4 @@
-import { initMobileControls, initLayoutEditor, goFullscreen, exitFullscreen, isFullscreen, updateAutoAim, setAutoAimEnabled, isAutoAimEnabled } from './mobile_input.js';
+import { initMobileControls, initLayoutEditor, goFullscreen, exitFullscreen, isFullscreen, updateAutoAim, setAutoAimEnabled, isAutoAimEnabled, updateAutoFire } from './mobile_input.js';
 if(!S.mobile) S.mobile = { fireHeld: false, adsHeld: false };
 import * as THREE from 'three';
 import {
@@ -3415,6 +3415,7 @@ function animate(){
     updatePlacements(dt);
     updateDecals(dt);
     if(window._updateAutoAim) window._updateAutoAim();
+    if(window._updateAutoFire) window._updateAutoFire(dt);
     updateADS(dt);
     updateHUD();
 
@@ -3559,6 +3560,7 @@ updateDevUI();
 initMenuFlow();
 initMobileSettings();
 window._updateAutoAim = updateAutoAim;
+window._updateAutoFire = updateAutoFire;
 window._setAutoAim = setAutoAimEnabled;
 window._isAutoAim = isAutoAimEnabled;
 // ⭐ Continuously check orientation

@@ -915,6 +915,58 @@ export function updateAutoAim(){
   S.player.pitch = Math.max(-1.45, Math.min(1.45, S.player.pitch));
 }
 
+
+
+// ═══════════════════════════════════════════════════════════
+// ADS AUTO-FIRE — mobile only
+//  - Regular weapons: auto-fire while ADS is held
+//  - Sniper/scope:  fire on ADS RELEASE
+// ═══════════════════════════════════════════════════════════
+let _prevAdsHeld = false;
+const _sniperFireCooldown = { t: 0 };
+
+export function updateAutoFire(dt){
+  if(!S.mobile) return;
+  if(!S.player || !S.player.alive) return;
+  if(S.gameState !== 'playing') return;
+  if(S.gamePaused) return;
+  if(S.reloading) return;
+  if(S.cannonOperating) return;
+  if(S.spectatorMode) return;
+
+  const w = window._getWeapon ? window._getWeapon(S.currentWeaponKey) : null;
+  if(!w || w.melee) {
+    _prevAdsHeld = false;
+    return;
+  }
+
+  const adsHeld = !!S.mobile.adsHeld;
+
+  // ⭐ SNIPER: fire on ADS release (not while holding)
+  if(w.scope){
+    if(_prevAdsHeld && !adsHeld){
+      // Just released → fire one shot
+      if(window._shoot) window._shoot();
+    }
+    _prevAdsHeld = adsHeld;
+    return;
+  }
+
+  // ⭐ REGULAR weapons: auto-fire while ADS is held
+  if(adsHeld){
+    // Only fire kung hindi sabay nakapindot yung FIRE button
+    // (para walang double-trigger)
+    if(!S.mobile.fireHeld){
+      if(window._shoot) window._shoot();
+    }
+  }
+
+  _prevAdsHeld = adsHeld;
+}
+
+
+
+
 export function setAutoAimEnabled(v){
   AUTO_AIM.enabled = !!v;
   try { localStorage.setItem('newstrike_autoaim', AUTO_AIM.enabled ? '1' : '0'); } catch(e){}
